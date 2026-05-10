@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Inscrições | Evento Autismo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #00509d;
+      --yellow: #ffc300;
+      --green: #2a9d8f;
+      --red: #d90429;
+      --bg: #0d1117;
+      --surface: #161b22;
+      --surface2: #1c2128;
+      --border: rgba(255,255,255,0.08);
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --font: 'Outfit', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ─── Login Screen ─── */
+    #login-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: radial-gradient(ellipse at 60% 30%, rgba(0,80,157,0.15) 0%, transparent 60%);
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+    }
+
+    .login-logo {
+      width: 70px;
+      height: 70px;
+      background: var(--blue);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      margin: 0 auto 24px;
+    }
+
+    .login-card h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .login-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .login-field {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .login-field input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 13px 16px;
+      font-size: 1rem;
+      font-family: var(--font);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .login-field input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(0,80,157,0.15);
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: var(--font);
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .login-btn:hover {
+      background: #0063be;
+      transform: translateY(-1px);
+    }
+
+    .login-error {
+      display: none;
+      background: rgba(217,4,41,0.12);
+      border: 1px solid rgba(217,4,41,0.3);
+      color: #ff6b81;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      margin-top: 14px;
+    }
+
+    /* ─── Dashboard ─── */
+    #dashboard {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-logo {
+      width: 36px;
+      height: 36px;
+      background: var(--blue);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+
+    .topbar-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .topbar-sub {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: rgba(255,255,255,0.2);
+      color: var(--text);
+    }
+
+    .btn-export {
+      background: var(--green);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 7px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-export:hover { background: #239b8e; }
+
+    .main-content {
+      padding: 32px 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 20px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .stat-value.blue { color: var(--blue); }
+    .stat-value.yellow { color: var(--yellow); }
+    .stat-value.green { color: var(--green); }
+
+    /* Table Section */
+    .table-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .table-title {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .search-input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.875rem;
+      font-family: var(--font);
+      color: var(--text);
+      outline: none;
+      width: 240px;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--blue);
+    }
+
+    .search-input::placeholder {
+      color: var(--muted);
+    }
+
+    /* Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      padding: 12px 24px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 15px 24px;
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tbody tr {
+      transition: background 0.15s;
+    }
+
+    .data-table tbody tr:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .td-num {
+      color: var(--muted);
+      font-size: 0.8rem;
+      width: 50px;
+    }
+
+    .td-name {
+      font-weight: 600;
+    }
+
+    .td-phone a {
+      color: #4ade80;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+    }
+
+    .td-phone a:hover {
+      text-decoration: underline;
+    }
+
+    .td-date {
+      color: var(--muted);
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    /* Loading / Empty */
+    .state-box {
+      padding: 60px 24px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .state-box .state-icon {
+      font-size: 3rem;
+      margin-bottom: 14px;
+    }
+
+    .state-box p {
+      font-size: 0.95rem;
+    }
+
+    .spinner {
+      width: 36px;
+      height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 14px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Refresh badge */
+    .refresh-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .topbar { padding: 0 16px; }
+      .main-content { padding: 20px 16px; }
+      .data-table th, .data-table td { padding: 12px 16px; }
+      .search-input { width: 100%; }
+      .table-header { gap: 12px; }
+      .topbar-sub { display: none; }
+      .btn-export span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── Login ─── -->
+  <div id="login-screen">
+    <div class="login-card">
+      <div class="login-logo">🧩</div>
+      <h1>Painel Administrativo</h1>
+      <p>Inscrições do evento — Deputada Flávia Francischini</p>
+
+      <form id="login-form">
+        <div class="login-field">
+          <label>Usuário</label>
+          <input type="text" id="login-user" placeholder="admin" autocomplete="username">
+        </div>
+        <div class="login-field">
+          <label>Senha</label>
+          <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button type="submit" class="login-btn">Entrar no Painel</button>
+        <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Dashboard ─── -->
+  <div id="dashboard">
+    <nav class="topbar">
+      <div class="topbar-brand">
+        <div class="topbar-logo">🧩</div>
+        <div>
+          <div class="topbar-title">Admin Panel</div>
+          <div class="topbar-sub"><span class="refresh-dot"></span>Atualização automática</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn-export" id="btn-export">⬇ <span>Exportar CSV</span></button>
+        <button class="btn-outline" id="btn-refresh">↻ Atualizar</button>
+        <button class="btn-outline" id="btn-logout">Sair</button>
+      </div>
+    </nav>
+
+    <div class="main-content">
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Total de Inscrições</div>
+          <div class="stat-value blue" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Hoje</div>
+          <div class="stat-value yellow" id="stat-today">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Esta Semana</div>
+          <div class="stat-value green" id="stat-week">—</div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="table-section">
+        <div class="table-header">
+          <div class="table-title">Lista de Inscritos</div>
+          <input type="text" class="search-input" id="search" placeholder="🔍 Buscar por nome ou telefone...">
+        </div>
+
+        <div id="table-area">
+          <div class="state-box">
+            <div class="spinner"></div>
+            <p>Carregando inscrições...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://uztncdwtaivqzcjlpecq.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6dG5jZHd0YWl2cXpjamxwZWNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTI2MzgsImV4cCI6MjA4NTI2ODYzOH0.pVuaVvvyj7nXI3UIPysYQVQWK_7iLa-zOEDNuGxTmvs';
+
+    // Credenciais simples (client-side, para MVP)
+    const ADMIN_USER = 'admin';
+    const ADMIN_PASS = 'flavia2025';
+
+    let allData = [];
+    let refreshInterval;
+
+    // ─── Login ───
+    const loginForm = document.getElementById('login-form');
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const user = document.getElementById('login-user').value;
+      const pass = document.getElementById('login-pass').value;
+
+      if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        loadData();
+        refreshInterval = setInterval(loadData, 30000); // auto-refresh 30s
+      } else {
+        const err = document.getElementById('login-error');
+        err.style.display = 'block';
+        setTimeout(() => err.style.display = 'none', 3000);
+      }
+    });
+
+    // ─── Logout ───
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      clearInterval(refreshInterval);
+      document.getElementById('dashboard').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-user').value = '';
+      document.getElementById('login-pass').value = '';
+    });
+
+    // ─── Refresh ───
+    document.getElementById('btn-refresh').addEventListener('click', loadData);
+
+    // ─── Search ───
+    document.getElementById('search').addEventListener('input', function () {
+      renderTable(filterData(this.value));
+    });
+
+    // ─── Fetch data from Supabase ───
+    async function loadData() {
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/inscricoes?select=*&order=created_at.desc`, {
+          headers: {
+            'apikey': SUPABASE_KEY,
+            'Authorization': `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        if (!res.ok) throw new Error('Erro ao buscar dados');
+        allData = await res.json();
+        updateStats(allData);
+        const searchVal = document.getElementById('search').value;
+        renderTable(filterData(searchVal));
+      } catch (err) {
+        document.getElementById('table-area').innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">⚠️</div>
+            <p>Erro ao carregar dados. Verifique a conexão.</p>
+          </div>`;
+      }
+    }
+
+    // ─── Filter ───
+    function filterData(query) {
+      if (!query.trim()) return allData;
+      const q = query.toLowerCase();
+      return allData.filter(r =>
+        r.nome.toLowerCase().includes(q) ||
+        r.whatsapp.includes(q)
+      );
+    }
+
+    // ─── Stats ───
+    function updateStats(data) {
+      const now = new Date();
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay());
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const today = data.filter(r => new Date(r.created_at) >= startOfDay).length;
+      const week = data.filter(r => new Date(r.created_at) >= startOfWeek).length;
+
+      document.getElementById('stat-total').textContent = data.length;
+      document.getElementById('stat-today').textContent = today;
+      document.getElementById('stat-week').textContent = week;
+    }
+
+    // ─── Render Table ───
+    function renderTable(data) {
+      if (!data.length) {
+        document.getElementById('table-area').innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">📋</div>
+            <p>Nenhuma inscrição encontrada.</p>
+          </div>`;
+        return;
+      }
+
+      const rows = data.map((r, i) => {
+        const phone = r.whatsapp.replace(/\D/g, '');
+        const date = new Date(r.created_at);
+        const formatted = date.toLocaleString('pt-BR', {
+          day: '2-digit', month: '2-digit', year: 'numeric',
+          hour: '2-digit', minute: '2-digit'
+        });
+        return `
+          <tr>
+            <td class="td-num">${i + 1}</td>
+            <td class="td-name">${escHtml(r.nome)}</td>
+            <td class="td-phone">
+              <a href="https://wa.me/55${phone}" target="_blank" rel="noopener">
+                📱 ${escHtml(r.whatsapp)}
+              </a>
+            </td>
+            <td class="td-date">${formatted}</td>
+          </tr>`;
+      }).join('');
+
+      document.getElementById('table-area').innerHTML = `
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nome</th>
+                <th>WhatsApp</th>
+                <th>Data de Inscrição</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    }
+
+    // ─── Export CSV ───
+    document.getElementById('btn-export').addEventListener('click', () => {
+      if (!allData.length) return alert('Sem dados para exportar.');
+      const header = 'Nome,WhatsApp,Data de Inscrição\n';
+      const rows = allData.map(r => {
+        const date = new Date(r.created_at).toLocaleString('pt-BR');
+        return `"${r.nome}","${r.whatsapp}","${date}"`;
+      }).join('\n');
+      const blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `inscricoes_evento_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    function escHtml(str) {
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+  </script>
+</body>
+</html>

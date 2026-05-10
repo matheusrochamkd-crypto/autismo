@@ -1,3 +1,6 @@
+const SUPABASE_URL = 'https://uztncdwtaivqzcjlpecq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV6dG5jZHd0YWl2cXpjamxwZWNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2OTI2MzgsImV4cCI6MjA4NTI2ODYzOH0.pVuaVvvyj7nXI3UIPysYQVQWK_7iLa-zOEDNuGxTmvs';
+
 document.addEventListener('DOMContentLoaded', () => {
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -5,15 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const targetId = this.getAttribute('href');
       if (targetId === '#') return;
-      
       const targetElement = document.querySelector(targetId);
       if (targetElement) {
-        targetElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'start'
-        });
-        
-        // Focus the first input if it's the form section
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         if (targetId === '#inscricao') {
           setTimeout(() => {
             const firstInput = targetElement.querySelector('input');
@@ -24,79 +21,90 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Form submission handler
+  // Form submission → salva no Supabase
   const form = document.getElementById('registration-form');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const name = document.getElementById('name').value;
-      const whatsapp = document.getElementById('whatsapp').value;
-      
-      // Basic validation
-      if (!name || !whatsapp) {
+
+      const nome = document.getElementById('name').value.trim();
+      const whatsapp = document.getElementById('whatsapp').value.trim();
+
+      if (!nome || !whatsapp) {
         alert('Por favor, preencha todos os campos obrigatórios.');
         return;
       }
-      
-      // Change button state
+
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
       submitBtn.textContent = 'Enviando...';
       submitBtn.disabled = true;
       submitBtn.style.opacity = '0.7';
-      
-      // Simulate API call
-      setTimeout(() => {
-        submitBtn.textContent = 'INSCRIÇÃO CONFIRMADA!';
-        submitBtn.style.backgroundColor = 'var(--color-green)';
+
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/inscricoes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': SUPABASE_ANON_KEY,
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ nome, whatsapp })
+        });
+
+        if (!res.ok) throw new Error('Erro ao salvar inscrição');
+
+        submitBtn.textContent = '✅ INSCRIÇÃO CONFIRMADA!';
+        submitBtn.style.backgroundColor = '#2a9d8f';
         submitBtn.style.color = 'white';
-        
-        // Form reset
         form.reset();
-        
-        // Revert button after 3 seconds
+
         setTimeout(() => {
           submitBtn.textContent = originalText;
           submitBtn.disabled = false;
           submitBtn.style.opacity = '1';
-          submitBtn.style.backgroundColor = 'var(--color-yellow)';
-          submitBtn.style.color = '#1a1a1a';
+          submitBtn.style.backgroundColor = '';
+          submitBtn.style.color = '';
+        }, 4000);
+
+      } catch (err) {
+        console.error(err);
+        submitBtn.textContent = '❌ Erro. Tente novamente.';
+        submitBtn.style.backgroundColor = '#d90429';
+        submitBtn.style.color = 'white';
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = '1';
+          submitBtn.style.backgroundColor = '';
+          submitBtn.style.color = '';
         }, 3000);
-        
-      }, 1500);
+      }
     });
   }
-  
-  // Input mask for WhatsApp (simple format: (XX) XXXXX-XXXX)
+
+  // Máscara WhatsApp
   const whatsappInput = document.getElementById('whatsapp');
   if (whatsappInput) {
-    whatsappInput.addEventListener('input', function(e) {
+    whatsappInput.addEventListener('input', function (e) {
       let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
       e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
     });
   }
 
-  // Simple scroll animation observer
-  const observerOptions = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0.1
-  };
-
-  const observer = new IntersectionObserver((entries, observer) => {
+  // Scroll animations
+  const observer = new IntersectionObserver((entries, obs) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         entry.target.style.opacity = '1';
         entry.target.style.transform = 'translateY(0)';
-        observer.unobserve(entry.target);
+        obs.unobserve(entry.target);
       }
     });
-  }, observerOptions);
+  }, { threshold: 0.1 });
 
-  // Apply initial hidden state and observe elements
-  const animateElements = document.querySelectorAll('.about-card, .speaker-content, .location-wrapper, .form-wrapper');
-  animateElements.forEach(el => {
+  document.querySelectorAll('.about-card, .speaker-content, .location-wrapper, .form-wrapper').forEach(el => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'all 0.6s ease-out';
@@ -104,22 +112,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Custom cinematic video player
-  const videoWrapper = document.getElementById('videoWrapper');
   const videoPoster = document.getElementById('videoPoster');
   const playBtn = document.getElementById('playBtn');
   const venueVideo = document.getElementById('venueVideo');
 
-  if (videoWrapper && venueVideo) {
+  if (venueVideo) {
     const startVideo = () => {
       venueVideo.src = 'video executive Gastronomia.mp4';
       venueVideo.load();
       venueVideo.play().catch(() => {});
       videoPoster.classList.add('is-hidden');
-      // Show native controls after play
       venueVideo.setAttribute('controls', '');
     };
-
-    playBtn.addEventListener('click', startVideo);
-    videoPoster.addEventListener('click', startVideo);
+    if (playBtn) playBtn.addEventListener('click', startVideo);
+    if (videoPoster) videoPoster.addEventListener('click', startVideo);
   }
 });
